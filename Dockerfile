@@ -32,5 +32,5 @@ RUN bundle exec rake assets:precompile && \
     rm -rf /opt/app/tmp/*
 
 ENTRYPOINT ["sh", "-c"]
-CMD ["rake db:create db:migrate && bin/rails s"]
+CMD ["rake db:create db:migrate db:seed && bin/rails s"]
 
