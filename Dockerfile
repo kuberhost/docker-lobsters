@@ -2,7 +2,7 @@ FROM alpine:edge
 
 RUN apk update && apk upgrade && \
     apk add bash libffi tzdata mariadb-connector-c-dev curl krb5 unzip busybox-extras && \
-    apk add ruby ruby-dev ruby-io-console ruby-bigdecimal ruby-json ruby-irb ruby-etc && \
+    apk add ruby ruby-dev ruby-io-console ruby-bigdecimal ruby-json ruby-irb ruby-etc nodejs yarn && \
     apk add ruby-nokogiri=1.8.4-r0 ruby-rake ruby-bundler && \
     update-ca-certificates && \
     rm -rf /var/cache/apk/*
@@ -28,10 +28,9 @@ ENV RAILS_LOG_TO_STDOUT=true
 ENV PORT=3000
 ENV RAILS_SERVE_STATIC_FILES=true
 
-RUN apk add nodejs yarn --no-cache && rm -rf /var/cache/apk/* && \
-    bundle exec rake assets:precompile && \
-    apk del nodejs yarn && \
-    rm -rf /var/cache/apk/*
+RUN bundle exec rake assets:precompile && \
+    rm -rf /opt/app/tmp/*
 
 ENTRYPOINT ["sh", "-c"]
-CMD rake db:create db:migrate && bin/rails s
+CMD ["rake db:create db:migrate && bin/rails s"]
+
