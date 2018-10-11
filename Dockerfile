@@ -14,6 +14,7 @@ ADD ./lobsters/Gemfile ./lobsters/Gemfile.lock /opt/app/
 RUN apk update && apk upgrade && \
     apk add git libffi-dev mysql-dev make gcc g++ python musl-dev linux-headers && \
     bundle install --retry 10 --system --without development test && \
+    gem install puma --no-doc && \
     apk del git libffi-dev mysql-dev make gcc g++ python musl-dev linux-headers && \
     rm -rf /var/cache/apk/* && \
     rm -rf /root/.gem && \
@@ -23,14 +24,14 @@ RUN apk update && apk upgrade && \
 COPY ./lobsters /opt/app/
 COPY ./docker-assets/config/database.yml /opt/app/config/database.yml
 
+ENV PORT=3000
 ENV RAILS_ENV=production
 ENV RAILS_LOG_TO_STDOUT=true
-ENV PORT=3000
 ENV RAILS_SERVE_STATIC_FILES=true
 
 RUN bundle exec rake assets:precompile && \
     rm -rf /opt/app/tmp/*
 
 ENTRYPOINT ["sh", "-c"]
-CMD ["rake db:create db:migrate db:seed && bin/rails s"]
+CMD ["rake db:create db:migrate db:seed && puma ./config.ru"]
 
